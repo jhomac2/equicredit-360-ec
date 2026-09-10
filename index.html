@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EquiCredit 360 EC Pro | Sistema de Evaluación Crediticia y Buró Ecuador</title>
+
+    <!-- External CDNs: Tailwind CSS, Chart.js, Lucide Icons, Canvas Confetti -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        neon: {
+                            cyan: '#00f2fe',
+                            blue: '#4facfe',
+                            emerald: '#00f260',
+                            amber: '#f59e0b',
+                            rose: '#ff0844',
+                            purple: '#8b5cf6',
+                            slate: '#0b0f19'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism Panels */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.58);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 242, 254, 0.35);
+            box-shadow: 0 10px 30px -5px rgba(0, 242, 254, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .text-neon-gradient {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #00f260 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.4); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 242, 254, 0.6); }
+
+        @keyframes pulseNeon {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.65; transform: scale(1.08); }
+        }
+        .glow-blob {
+            animation: pulseNeon 9s infinite ease-in-out;
+        }
+
+        /* Printable Official Report Styles */
+        @media print {
+            body {
+                background: white !important;
+                color: #0f172a !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            #printReportSection {
+                display: block !important;
+                background: white !important;
+                color: #0f172a !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .glass-panel, .glass-card {
+                background: white !important;
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                filter: none !important;
+                color: #0f172a !important;
+            }
+            .print-watermark {
+                position: fixed;
+                top: 45%;
+                left: 15%;
+                font-size: 5rem;
+                color: rgba(15, 23, 42, 0.04);
+                transform: rotate(-30deg);
+                pointer-events: none;
+                z-index: 0;
+                font-weight: 900;
+                text-transform: uppercase;
+                letter-spacing: 0.2em;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-cyan-500 selection:text-black overflow-x-hidden">
+
+    <!-- Subtle Neon Background Glow -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none no-print">
+        <div class="absolute -top-40 -left-40 w-[34rem] h-[34rem] bg-cyan-600/15 rounded-full filter blur-3xl glow-blob"></div>
+        <div class="absolute top-1/3 -right-40 w-[30rem] h-[30rem] bg-emerald-600/15 rounded-full filter blur-3xl glow-blob" style="animation-delay: 3s;"></div>
+        <div class="absolute -bottom-40 left-1/3 w-[36rem] h-[36rem] bg-purple-600/12 rounded-full filter blur-3xl glow-blob" style="animation-delay: 6s;"></div>
+    </div>
+
+    <div class="relative z-20 flex flex-col min-h-screen">
+        <header class="glass-panel sticky top-0 z-40 px-4 md:px-8 py-3 flex items-center justify-between no-print border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-cyan-500/25">
+                    <i data-lucide="shield-check" class="text-slate-950 w-6 h-6 stroke-[2.5]"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl md:text-2xl font-black tracking-tight text-neon-gradient">EquiCredit 360</span>
+                        <span class="px-1.5 py-0.5 text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-md tracking-wider">PRO EC</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 font-medium hidden sm:block">
+                        Buró de Crédito Ecuatoriano (1 - 999 pts) • Sincronización Google Sheets
+                    </p>
+                </div>
+            </div>
+
+            <!-- Header Quick Actions and Cloud Status -->
+            <div class="flex items-center gap-2 md:gap-3">
+                <!-- Sync status pill -->
+                <div id="cloudSyncStatusBadge" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 text-xs font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse" id="cloudStatusDot"></span>
+                    <span id="cloudStatusText">Almacenamiento Local</span>
+                </div>
+
+                <button onclick="switchView('cloud')" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+                    <i data-lucide="cloud" class="w-3.5 h-3.5"></i>
+                    <span class="hidden md:inline">Google Sheets</span>
+                </button>
+
+                <button onclick="triggerPrintReport()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 hover:brightness-110 active:scale-95 transition-all">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                    <span>Informe PDF</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Left Sidebar (Desktop) -->
+            <aside class="hidden lg:flex flex-col justify-between w-64 glass-panel border-r border-white/10 p-4 no-print select-none">
+                <div class="space-y-1.5">
+                    <div class="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Módulos del Sistema</div>
+
+                    <button onclick="switchView('evaluator')" class="nav-tab active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all group" data-view="evaluator">
+                        <i data-lucide="user-check" class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Evaluador de Perfil</span>
+                    </button>
+
+                    <button onclick="switchView('score_dashboard')" class="nav-tab w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all group" data-view="score_dashboard">
+                        <i data-lucide="gauge" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Tacómetro & Score</span>
+                    </button>
+
+                    <button onclick="switchView('factors')" class="nav-tab w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all group" data-view="factors">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Factores de Buró</span>
+                    </button>
+
+                    <button onclick="switchView('preapproval')" class="nav-tab w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all group" data-view="preapproval">
+                        <i data-lucide="landmark" class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Pre-Aprobador Bancario</span>
+                    </button>
+
+                    <button onclick="switchView('roadmap')" class="nav-tab w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all group" data-view="roadmap">
+                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Plan Subir Score (+150 pts)</span>
+                    </button>
+
+                    <button onclick="switchView('cloud')" class="nav-tab w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all group" data-view="cloud">
+                        <i data-lucide="cloud-cog" class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Nube Google Sheets</span>
+                    </button>
+                </div>
+
+                <!-- Footer Quick Tools -->
+                <div class="space-y-3 pt-4 border-t border-white/5">
+                    <div class="p-3 rounded-xl bg-slate-900/90 border border-white/5 text-xs space-y-1.5">
+                        <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                            <span>Protección LOPDP EC</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            Cumple la Ley de Protección de Datos Personales de Ecuador. Almacenamiento directo en tu propia cuenta Google Drive.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="loadSampleEcuadorianProfile()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-cyan-300 border border-cyan-500/20 transition-all flex items-center justify-center gap-1.5">
+                            <i data-lucide="sparkles" class="w-3 h-3"></i>
+                            <span>Demo</span>
+                        </button>
+                        <button onclick="resetEvaluationData()" class="flex-1 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-all flex items-center justify-center gap-1.5">
+                            <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                            <span>Reiniciar</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 pb-24 lg:pb-8" id="mainAppContainer">
+
+                <!-- VIEW 1: Evaluator Form -->
+                <section id="view-evaluator" class="view-pane block space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/10 pb-4">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
+                                <span>Simulador de Perfil Crediticio</span>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Ecuador 2026</span>
+                            </h1>
+                            <p class="text-xs md:text-sm text-slate-400 mt-1">
+                                Ingrese datos socioeconómicos reales para simular el Score oficial del Buró bajo metodología de la Superintendencia de Bancos (1 a 999 pts).
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="calculateCreditScore()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 font-black text-sm shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                                <i data-lucide="calculator" class="w-4 h-4 stroke-[2.5]"></i>
+                                <span>Calcular Score & Riesgo</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <form id="creditProfileForm" onsubmit="event.preventDefault(); calculateCreditScore();" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Column 1: Personal & Geographic Data -->
+                        <div class="glass-card rounded-2xl p-5 space-y-4">
+                            <div class="flex items-center justify-between text-cyan-400 font-bold border-b border-white/5 pb-2.5">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="user" class="w-4 h-4"></i>
+                                    <h3 class="text-sm uppercase tracking-wider text-slate-200">Datos Personales</h3>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">Paso 1/3</span>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Nombres y Apellidos Completos</label>
+                                <input type="text" id="inpFullName" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all" placeholder="Ej. Carlos Andrés Mendoza Loor" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
+                                    <span>Cédula de Identidad (10 dígitos)</span>
+                                    <span id="cedulaValidationBadge" class="text-[10px] font-bold text-slate-400">Sin verificar</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" maxlength="10" id="inpCedula" oninput="validateEcuadorianCedula(this.value)" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-3.5 pr-9 py-2 text-sm text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all" placeholder="1712345678" required>
+                                    <i id="cedulaStatusIcon" data-lucide="credit-card" class="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2"></i>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Correo Electrónico (Para Alertas y Reportes)</label>
+                                <input type="email" id="inpEmail" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all" placeholder="usuario@email.com" value="usuario@ecuador.com">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Provincia</label>
+                                    <select id="inpProvince" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                        <option value="Pichincha">Pichincha</option>
+                                        <option value="Guayas">Guayas</option>
+                                        <option value="Azuay">Azuay</option>
+                                        <option value="Manabí">Manabí</option>
+                                        <option value="Tungurahua">Tungurahua</option>
+                                        <option value="Loja">Loja</option>
+                                        <option value="El Oro">El Oro</option>
+                                        <option value="Imbabura">Imbabura</option>
+                                        <option value="Chimborazo">Chimborazo</option>
+                                        <option value="Cotopaxi">Cotopaxi</option>
+                                        <option value="Santo Domingo">Santo Domingo</option>
+                                        <option value="Otras Provincias">Otras Provincias</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Moneda</label>
+                                    <select id="inpCurrency" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                        <option value="USD">$ USD (Ecuador)</option>
+                                        <option value="EUR">€ EUR</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Ocupación / Situación Laboral</label>
+                                <select id="inpEmployment" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                    <option value="dependiente_indefinido">Relación de Dependencia (Contrato Indefinido / Aporte IESS)</option>
+                                    <option value="profesional_ruc">Profesional Independiente / Servicios con RUC</option>
+                                    <option value="empresario_rimpe">Negocio / Emprendedor (RIMPE / Microempresa)</option>
+                                    <option value="informal">Informal / Sin justificación bancaria regular</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Financial Capacity (USD) -->
+                        <div class="glass-card rounded-2xl p-5 space-y-4">
+                            <div class="flex items-center justify-between text-emerald-400 font-bold border-b border-white/5 pb-2.5">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                                    <h3 class="text-sm uppercase tracking-wider text-slate-200">Capacidad Financiera</h3>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">Paso 2/3</span>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Ingreso Neto Líquido Mensual ($ USD)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                                    <input type="number" step="10" min="0" id="inpNetIncome" value="1200" oninput="updateLiveDtiCalculation()" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-8 pr-4 py-2 text-sm text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" placeholder="1200" required>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Sueldo neto percibido tras deducción IESS (9.45%) o facturación mensual promedio.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Gastos Fijos de Subsistencia ($ USD)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                                    <input type="number" step="10" min="0" id="inpFixedExpenses" value="550" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-8 pr-4 py-2 text-sm text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" placeholder="550" required>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Vivienda, alimentación, servicios básicos, educación, salud familiar.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Pago Mensual en Cuotas y Deudas Activas ($ USD)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                                    <input type="number" step="10" min="0" id="inpActiveDebtsMonthly" value="280" oninput="updateLiveDtiCalculation()" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-8 pr-4 py-2 text-sm text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all" placeholder="280" required>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Suma de cuotas vigentes de préstamos bancarios, cuotas de tarjetas y almacenes.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Saldo Total de Deudas Vigentes ($ USD)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                                    <input type="number" step="50" min="0" id="inpTotalDebtBalance" value="3800" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-8 pr-4 py-2 text-sm text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" placeholder="3800">
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Capital total remanente por pagar en todo el sistema.</p>
+                            </div>
+
+                            <div class="pt-1">
+                                <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between text-xs">
+                                    <span class="text-slate-400">Ratio DTI Estimado:</span>
+                                    <span id="quickDtiBadge" class="font-mono font-bold text-cyan-400">23.3% (Dentro del límite SB)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 3: Bureau Record & Credit History (24 Months) -->
+                        <div class="glass-card rounded-2xl p-5 space-y-4">
+                            <div class="flex items-center justify-between text-purple-400 font-bold border-b border-white/5 pb-2.5">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="history" class="w-4 h-4"></i>
+                                    <h3 class="text-sm uppercase tracking-wider text-slate-200">Historial Buró (24 Meses)</h3>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">Paso 3/3</span>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Sector Financiero (Bancos / Cooperativas)</label>
+                                <select id="inpHistoricMoraBank" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="0">Categoría A1 - Sin mora histórica (Excelente)</option>
+                                    <option value="1">Mora de 1 a 30 días en últimos 12 meses</option>
+                                    <option value="2">Mora de 31 a 60 días (Riesgo potencial)</option>
+                                    <option value="3">Mora de 61 a 90 días (Deficiente)</option>
+                                    <option value="4">Mora +90 días / Cobranza judicial / Castigada</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Sector Comercial (De Prati, Créditos Económicos, Celular)</label>
+                                <select id="inpHistoricMoraCommercial" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="0">Al día / Sin registros negativos comerciales</option>
+                                    <option value="1">Retraso menor a 30 días ya cancelado</option>
+                                    <option value="2">Deuda vencida pendiente en almacén o telefonía</option>
+                                    <option value="3">Cobro pre-judicial / Abogados de cobranzas</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Uso de Tarjetas</label>
+                                    <select id="inpCardUtilization" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="15">&lt; 30% (Saludable)</option>
+                                        <option value="50" selected>30% - 60% (Moderado)</option>
+                                        <option value="85">61% - 90% (Elevado)</option>
+                                        <option value="100">Al tope / Sobregiro</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Antigüedad Récord</label>
+                                    <select id="inpCreditAge" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="5">+ 5 Años con récord</option>
+                                        <option value="3" selected>2 a 4 Años</option>
+                                        <option value="1">6 meses a 1 Año</option>
+                                        <option value="0">Sin historial previo</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Consultas al Buró (Últimos 6 Meses)</label>
+                                <select id="inpRecentInquiries" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="0">0 a 1 consulta (Normal)</option>
+                                    <option value="3" selected>2 a 4 consultas de entidades financieras</option>
+                                    <option value="7">5 a más consultas (Indicio de sobreendeudamiento)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="view-score_dashboard" class="view-pane hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-2xl md:text-3xl font-black tracking-tight" id="scoreUserGreeting">Puntaje Oficial Calculado</h2>
+                                <span id="badgeSegmentHeader" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">RIESGO BAJO</span>
+                            </div>
+                            <p class="text-xs md:text-sm text-slate-400 mt-0.5">
+                                Escala oficial de la Superintendencia de Bancos del Ecuador y Burós de Crédito (1 a 999 puntos).
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="syncToGoogleSheets()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold border border-cyan-500/30 flex items-center gap-1.5 transition-all">
+                                <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                                <span>Guardar en Sheets</span>
+                            </button>
+                            <button onclick="triggerPrintReport()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 hover:brightness-110 transition-all">
+                                <i data-lucide="printer" class="w-4 h-4"></i>
+                                <span>Imprimir Certificado</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Speedometer Hero Card & Score Breakdown -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Speedometer Gauge Card (7 cols) -->
+                        <div class="glass-card rounded-3xl p-6 lg:col-span-7 flex flex-col items-center justify-center relative overflow-hidden border-cyan-500/30">
+                            <div class="absolute -top-10 -right-10 w-44 h-44 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                            <div class="text-center mb-1">
+                                <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Score Equifax / Buró Ecuador</span>
+                            </div>
+
+                            <!-- Interactive Speedometer Canvas -->
+                            <div class="relative w-full max-w-[340px] h-48 flex items-center justify-center">
+                                <canvas id="gaugeCanvas" class="w-full h-full"></canvas>
+                                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 text-center">
+                                    <div class="text-4xl md:text-5xl font-black font-mono tracking-tight" id="scoreValueDisplay">785</div>
+                                    <div class="text-[11px] font-bold uppercase tracking-wider mt-0.5 text-slate-300" id="scoreTierLabel">Buen Pagador / Riesgo Bajo</div>
+                                </div>
+                            </div>
+
+                            <!-- Scale Indicators Range -->
+                            <div class="w-full max-w-md grid grid-cols-4 gap-1.5 mt-4 pt-3 border-t border-white/5 text-center text-[10px] font-bold">
+                                <div class="p-1.5 rounded-lg bg-rose-950/40 text-rose-400 border border-rose-500/20">
+                                    <span>1 - 399</span>
+                                    <div class="text-[9px] font-normal text-rose-300/80">Muy Alto</div>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-amber-950/40 text-amber-400 border border-amber-500/20">
+                                    <span>400 - 699</span>
+                                    <div class="text-[9px] font-normal text-amber-300/80">Medio</div>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
+                                    <span>700 - 849</span>
+                                    <div class="text-[9px] font-normal text-emerald-300/80">Bajo</div>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-cyan-950/40 text-cyan-400 border border-cyan-500/20">
+                                    <span>850 - 999</span>
+                                    <div class="text-[9px] font-normal text-cyan-300/80">Premium AAA</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4 Metric Cards Grid (5 cols) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-span-5 gap-3">
+                            <!-- DTI Card -->
+                            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between border-emerald-500/20">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-400 font-semibold">Endeudamiento (DTI)</span>
+                                    <i data-lucide="percent" class="w-4 h-4 text-emerald-400"></i>
+                                </div>
+                                <div class="my-2">
+                                    <div class="text-2xl font-black font-mono" id="kpiDtiValue">23.3%</div>
+                                    <p class="text-[10px] text-slate-400">Límite prudencial SB: 30%</p>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                    <div id="kpiDtiBar" class="bg-emerald-400 h-full w-[23%] transition-all duration-700"></div>
+                                </div>
+                            </div>
+
+                            <!-- Monthly Residual Cash -->
+                            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between border-cyan-500/20">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-400 font-semibold">Liquidez Mensual</span>
+                                    <i data-lucide="wallet" class="w-4 h-4 text-cyan-400"></i>
+                                </div>
+                                <div class="my-2">
+                                    <div class="text-2xl font-black font-mono text-cyan-300" id="kpiResidualValue">$370.00</div>
+                                    <p class="text-[10px] text-slate-400">Superávit libre mensual</p>
+                                </div>
+                                <span class="text-[10px] font-semibold text-emerald-400">Capacidad Positiva</span>
+                            </div>
+
+                            <!-- Probability of Approval -->
+                            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between border-purple-500/20">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-400 font-semibold">Aprobación Bancaria</span>
+                                    <i data-lucide="award" class="w-4 h-4 text-purple-400"></i>
+                                </div>
+                                <div class="my-2">
+                                    <div class="text-2xl font-black font-mono text-purple-400" id="kpiApprovalProb">88%</div>
+                                    <p class="text-[10px] text-slate-400">Probabilidad global estimada</p>
+                                </div>
+                                <span class="text-[10px] font-semibold text-purple-300">Sujeto a crédito bancario</span>
+                            </div>
+
+                            <!-- SB Rating -->
+                            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between border-amber-500/20">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-400 font-semibold">Calificación SB</span>
+                                    <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                                </div>
+                                <div class="my-2">
+                                    <div class="text-2xl font-black font-mono text-amber-400" id="kpiSbGrade">A-1</div>
+                                    <p class="text-[10px] text-slate-400">Normativa Riesgo Integral</p>
+                                </div>
+                                <span class="text-[10px] font-semibold text-emerald-400" id="kpiSbLabel">Crédito ordinario</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-factors" class="view-pane hidden space-y-6">
+                    <div class="border-b border-white/10 pb-4">
+                        <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-6 h-6 text-purple-400"></i>
+                            <span>Análisis de Factores Determinantes del Buró</span>
+                        </h2>
+                        <p class="text-xs md:text-sm text-slate-400 mt-1">
+                            Ponderación oficial calculada de acuerdo a las variables de comportamiento crediticio de Equifax y la Superintendencia de Bancos del Ecuador.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Radar Polar Chart -->
+                        <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                            <h3 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+                                <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i>
+                                <span>Radar de Desempeño Crediticio (Ponderaciones)</span>
+                            </h3>
+                            <div class="relative h-72 w-full flex items-center justify-center">
+                                <canvas id="radarFactorsCanvas"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Individual Factor Evaluation Bars -->
+                        <div class="glass-card rounded-2xl p-5 space-y-4">
+                            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                                <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i>
+                                <span>Impacto de Cada Factor en tu Puntaje</span>
+                            </h3>
+
+                            <!-- Factor 1: Historial de Pago (35%) -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-slate-300">1. Historial de Pagos y Moras (Peso 35%)</span>
+                                    <span id="factPaymentImpact" class="font-mono text-emerald-400">95 / 100 pts</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div id="factPaymentBar" class="bg-emerald-400 h-full w-[95%] transition-all"></div>
+                                </div>
+                                <p class="text-[11px] text-slate-400">Cumplimiento puntual en fechas de corte sin morosidades vencidas.</p>
+                            </div>
+
+                            <!-- Factor 2: Nivel de Endeudamiento / Cupos (30%) -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-slate-300">2. Nivel de Endeudamiento y Cupos (Peso 30%)</span>
+                                    <span id="factUtilizationImpact" class="font-mono text-cyan-400">80 / 100 pts</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div id="factUtilizationBar" class="bg-cyan-400 h-full w-[80%] transition-all"></div>
+                                </div>
+                                <p class="text-[11px] text-slate-400">Uso de tarjetas y relación de cuotas frente a ingresos netos (&lt;30% SB).</p>
+                            </div>
+
+                            <!-- Factor 3: Antigüedad de Cuentas (15%) -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-slate-300">3. Antigüedad del Historial (Peso 15%)</span>
+                                    <span id="factAgeImpact" class="font-mono text-purple-400">75 / 100 pts</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div id="factAgeBar" class="bg-purple-400 h-full w-[75%] transition-all"></div>
+                                </div>
+                                <p class="text-[11px] text-slate-400">Años continuos manteniendo líneas y créditos activos en el sistema.</p>
+                            </div>
+
+                            <!-- Factor 4: Consultas Recientes (10%) -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-slate-300">4. Consultas Recientes / Búsqueda de Crédito (Peso 10%)</span>
+                                    <span id="factInquiriesImpact" class="font-mono text-amber-400">85 / 100 pts</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div id="factInquiriesBar" class="bg-amber-400 h-full w-[85%] transition-all"></div>
+                                </div>
+                                <p class="text-[11px] text-slate-400">Revisiones al buró por bancos en los últimos 6 meses (ideal &le; 2 consultas).</p>
+                            </div>
+
+                            <!-- Factor 5: Estabilidad Laboral (10%) -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-slate-300">5. Estabilidad Laboral y Aportes IESS/RUC (Peso 10%)</span>
+                                    <span id="factStabilityImpact" class="font-mono text-blue-400">85 / 100 pts</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div id="factStabilityBar" class="bg-blue-400 h-full w-[85%] transition-all"></div>
+                                </div>
+                                <p class="text-[11px] text-slate-400">Continuidad en aportaciones IESS o declaraciones tributarias SRI.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-preapproval" class="view-pane hidden space-y-6">
+                    <div class="border-b border-white/10 pb-4">
+                        <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <i data-lucide="landmark" class="w-6 h-6 text-amber-400"></i>
+                            <span>Pre-Aprobador en Instituciones Financieras del Ecuador</span>
+                        </h2>
+                        <p class="text-xs md:text-sm text-slate-400 mt-1">
+                            Simulación de viabilidad crediticia en Banco Pichincha, Banco Guayaquil, Produbanco, Banco del Pacífico, BIESS y Cooperativas de Ahorro y Crédito (JEP, Alianza del Valle).
+                        </p>
+                    </div>
+
+                    <!-- Products Dynamic Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="creditProductsGrid">
+                        <!-- Populated dynamically via populateCreditProducts() -->
+                    </div>
+                </section>
+
+                <section id="view-roadmap" class="view-pane hidden space-y-6">
+                    <div class="border-b border-white/10 pb-4">
+                        <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-blue-400"></i>
+                            <span>Plan de Acción: Cómo Subir de 50 a 150 Puntos en 90 Días</span>
+                        </h2>
+                        <p class="text-xs md:text-sm text-slate-400 mt-1">
+                            Recomendaciones específicas de optimización financiera adaptadas a las reglas del Buró ecuatoriano.
+                        </p>
+                    </div>
+
+                    <!-- Action items list -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="actionPlanCardsContainer">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- What-if Score Simulation Slider -->
+                    <div class="glass-card rounded-2xl p-6 space-y-5 border-cyan-500/30">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+                                    <span>Simulador Predictivo "What-If"</span>
+                                </h3>
+                                <p class="text-xs text-slate-400">Observa cómo se incrementa tu puntaje al reducir tus cuotas mensuales activas.</p>
+                            </div>
+                            <span class="text-xs font-mono px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30 self-start sm:self-auto" id="simCurrentScoreLabel">Score: 785 pts</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-slate-300">Amortización / Reducción de Cuota Simulada</span>
+                                <span id="simDebtReductionValue" class="text-emerald-400 font-mono font-bold">$0 menos al mes</span>
+                            </div>
+                            <input type="range" id="simDebtSlider" min="0" max="350" step="25" value="0" oninput="updateWhatIfSimulation(this.value)" class="w-full accent-cyan-400 bg-slate-800 rounded-lg cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                                <span>$0 / mes</span>
+                                <span>-$175 / mes</span>
+                                <span>-$350 / mes</span>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between">
+                            <div class="text-xs">
+                                <span class="text-slate-400">Puntaje Estimado Proyectado (90 días):</span>
+                                <div class="text-2xl font-black font-mono text-neon-gradient" id="simProjectedScore">785 Puntos</div>
+                            </div>
+                            <div class="text-right text-xs">
+                                <span class="text-slate-400">Nuevo DTI Estimado:</span>
+                                <div class="text-lg font-bold font-mono text-emerald-400" id="simProjectedDti">23.3%</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-cloud" class="view-pane hidden space-y-6">
+                    <div class="border-b border-white/10 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                                <i data-lucide="cloud-cog" class="w-6 h-6 text-cyan-400"></i>
+                                <span>Sincronización con tu Propio Google Sheets</span>
+                            </h2>
+                            <p class="text-xs md:text-sm text-slate-400 mt-1">
+                                Guarda tus evaluaciones en tu hoja de cálculo privada de Google Drive mediante Google Apps Script. 100% gratuito y seguro.
+                            </p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 self-start">Nube Personal</span>
+                    </div>
+
+                    <!-- Connection Card -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="glass-card rounded-2xl p-6 lg:col-span-7 space-y-5 border-cyan-500/30">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-200 mb-1.5">URL de la Aplicación Web (Google Apps Script)</label>
+                                <input type="url" id="inpGoogleAppScriptUrl" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all" placeholder="https://script.google.com/macros/s/AKfycbx.../exec">
+                                <p class="text-[11px] text-slate-400 mt-1.5">
+                                    Pega aquí la URL desplegada como Web App con acceso "Cualquier persona" (Anyone).
+                                </p>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2.5">
+                                <button onclick="testGoogleSheetsConnection()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold border border-cyan-500/30 flex items-center gap-2 transition-all">
+                                    <i data-lucide="radio" class="w-4 h-4 text-cyan-400"></i>
+                                    <span>Probar y Conectar</span>
+                                </button>
+                                <button onclick="syncToGoogleSheets()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 text-xs font-bold flex items-center gap-2 shadow-lg shadow-cyan-500/20 hover:brightness-110 active:scale-95 transition-all">
+                                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                                    <span>Sincronizar Datos Ahora</span>
+                                </button>
+                                <button onclick="loadFromGoogleSheets()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-white/10 flex items-center gap-2 transition-all">
+                                    <i data-lucide="download-cloud" class="w-4 h-4 text-emerald-400"></i>
+                                    <span>Cargar de la Nube</span>
+                                </button>
+                            </div>
+
+                            <div id="cloudConnectionFeedback" class="p-3 rounded-xl bg-slate-900/80 border border-white/5 text-xs text-slate-300 flex items-center gap-2">
+                                <i data-lucide="info" class="w-4 h-4 text-cyan-400"></i>
+                                <span>Estado: Configuración lista para enlazar con Google Drive.</span>
+                            </div>
+
+                            <!-- JSON Local Backup & Restore -->
+                            <div class="pt-4 border-t border-white/10 space-y-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Respaldo Manual en Archivo JSON</h4>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="exportDataToJson()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center gap-2">
+                                        <i data-lucide="download" class="w-4 h-4 text-blue-400"></i>
+                                        <span>Descargar Copia JSON</span>
+                                    </button>
+                                    <label class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center gap-2 cursor-pointer">
+                                        <i data-lucide="upload" class="w-4 h-4 text-emerald-400"></i>
+                                        <span>Restaurar desde JSON</span>
+                                        <input type="file" id="jsonFileInput" accept=".json" onchange="importDataFromJson(event)" class="hidden">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step-by-Step Script Instructions (5 cols) -->
+                        <div class="glass-card rounded-2xl p-5 lg:col-span-5 space-y-3 border-emerald-500/20 text-xs">
+                            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                                <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i>
+                                <span>Código para Google Apps Script</span>
+                            </h3>
+                            <p class="text-slate-400 text-[11px] leading-relaxed">
+                                1. Crea una hoja en <strong>Google Sheets</strong>.<br>
+                                2. Ve a <strong>Extensiones &gt; Apps Script</strong>.<br>
+                                3. Reemplaza el código con el siguiente fragmento y haz clic en <strong>Implementar &gt; Nueva implementación &gt; Aplicación Web</strong> (Quién tiene acceso: <em>Cualquier persona</em>).
+                            </p>
+                            <div class="relative">
+                                <pre class="bg-slate-950 p-3 rounded-xl text-[10px] font-mono text-cyan-300 overflow-x-auto max-h-56 border border-slate-800 select-all" id="gasScriptSnippet">function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn()).getValues();
+  return ContentService.createTextOutput(JSON.stringify({status: "ok", data: data}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var payload = JSON.parse(e.postData.contents);
+  
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(["Fecha", "Nombres", "Cedula", "Provincia", "Ingreso", "Deudas", "Score", "Segmento", "DTI"]);
+  }
+  
+  sheet.appendRow([
+    new Date(),
+    payload.fullName,
+    payload.cedula,
+    payload.province,
+    payload.netIncome,
+    payload.activeDebtsMonthly,
+    payload.score,
+    payload.segment,
+    payload.dti + "%"
+  ]);
+  
+  return ContentService.createTextOutput(JSON.stringify({status: "success"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+                            </div>
+                            <button onclick="copyGasScript()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-semibold text-[11px] border border-cyan-500/20 flex items-center justify-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span id="copyScriptBtnText">Copiar Código de Apps Script</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 glass-panel border-t border-white/10 px-2 py-2 flex items-center justify-around no-print">
+            <button onclick="switchView('evaluator')" class="mobile-tab active flex flex-col items-center gap-1 text-[10px] font-semibold text-slate-400" data-view="evaluator">
+                <i data-lucide="user-check" class="w-5 h-5"></i>
+                <span>Perfil</span>
+            </button>
+            <button onclick="switchView('score_dashboard')" class="mobile-tab flex flex-col items-center gap-1 text-[10px] font-semibold text-slate-400" data-view="score_dashboard">
+                <i data-lucide="gauge" class="w-5 h-5"></i>
+                <span>Score</span>
+            </button>
+            <button onclick="calculateCreditScore()" class="flex flex-col items-center justify-center -mt-5 w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-500 to-emerald-400 text-slate-950 shadow-lg shadow-cyan-500/40 active:scale-90 transition-transform">
+                <i data-lucide="calculator" class="w-6 h-6 stroke-[2.5]"></i>
+            </button>
+            <button onclick="switchView('factors')" class="mobile-tab flex flex-col items-center gap-1 text-[10px] font-semibold text-slate-400" data-view="factors">
+                <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                <span>Factores</span>
+            </button>
+            <button onclick="switchView('preapproval')" class="mobile-tab flex flex-col items-center gap-1 text-[10px] font-semibold text-slate-400" data-view="preapproval">
+                <i data-lucide="landmark" class="w-5 h-5"></i>
+                <span>Créditos</span>
+            </button>
+            <button onclick="switchView('cloud')" class="mobile-tab flex flex-col items-center gap-1 text-[10px] font-semibold text-slate-400" data-view="cloud">
+                <i data-lucide="cloud" class="w-5 h-5"></i>
+                <span>Nube</span>
+            </button>
+        </nav>
+    </div>
+
+    <div id="printReportSection" class="hidden print:block p-8 max-w-4xl mx-auto bg-white text-slate-900 font-sans relative">
+        <div class="print-watermark">SUPERINTENDENCIA DE BANCOS // EQUICREDIT 360 PRO</div>
+
+        <!-- Official Header with Emblems & Timestamp -->
+        <div class="border-b-2 border-slate-900 pb-4 mb-6 flex items-start justify-between">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-2xl font-black tracking-tight text-slate-950">EQUICREDIT 360 PRO</span>
+                    <span class="text-xs font-bold px-2 py-0.5 bg-slate-900 text-white rounded">ECUADOR</span>
+                </div>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Certificado de Evaluación de Buró y Riesgo Crediticio Integral
+                </h2>
+                <p class="text-[10px] text-slate-500">
+                    Normativa Oficial de Calificación de Riesgos de la Superintendencia de Bancos del Ecuador (SB) y Burós Autorizados.
+                </p>
+            </div>
+            <div class="text-right text-[11px] font-mono text-slate-600">
+                <div>Fecha de Emisión: <span id="repPrintDate" class="font-bold">--/--/----</span></div>
+                <div>Hora: <span id="repPrintTime" class="font-bold">--:--:--</span></div>
+                <div>Código Hash Ref: <span id="repVerificationHash" class="font-bold text-slate-900">EQ-2026-XXXXX</span></div>
+            </div>
+        </div>
+
+        <!-- Person Identification Bar -->
+        <div class="bg-slate-100 rounded-lg p-3 mb-6 grid grid-cols-4 gap-3 text-xs border border-slate-300">
+            <div>
+                <span class="text-slate-500 block text-[10px] uppercase font-bold">Titular Evaluado</span>
+                <span id="repPrintName" class="font-bold text-slate-900 text-sm">--</span>
+            </div>
+            <div>
+                <span class="text-slate-500 block text-[10px] uppercase font-bold">Cédula de Identidad</span>
+                <span id="repPrintCedula" class="font-bold font-mono text-slate-900">--</span>
+            </div>
+            <div>
+                <span class="text-slate-500 block text-[10px] uppercase font-bold">Provincia / Residencia</span>
+                <span id="repPrintProvince" class="font-bold text-slate-900">--</span>
+            </div>
+            <div>
+                <span class="text-slate-500 block text-[10px] uppercase font-bold">Moneda / Sincronización</span>
+                <span id="repPrintSync" class="font-bold text-emerald-800">USD (Nube OK)</span>
+            </div>
+        </div>
+
+        <!-- Score & Main Rating Box -->
+        <div class="border-2 border-slate-900 rounded-xl p-5 mb-6 flex items-center justify-between">
+            <div>
+                <span class="text-xs uppercase font-extrabold text-slate-500 tracking-wider">Score Oficial de Buró (1 - 999)</span>
+                <div class="text-5xl font-black font-mono tracking-tight text-slate-900" id="repPrintScore">785</div>
+                <div class="text-xs font-bold uppercase mt-1 text-slate-700" id="repPrintSegment">Riesgo Bajo / Sujeto de Crédito Preferencial</div>
+            </div>
+            <div class="text-right space-y-1.5 text-xs">
+                <div><span class="text-slate-500">Calificación SB:</span> <strong id="repPrintSbGrade" class="font-mono text-sm">A-1</strong></div>
+                <div><span class="text-slate-500">Ratio DTI Endeudamiento:</span> <strong id="repPrintDti" class="font-mono text-sm">23.3%</strong></div>
+                <div><span class="text-slate-500">Ingreso Neto Declarado:</span> <strong id="repPrintIncome" class="font-mono text-sm">$1,200.00</strong></div>
+                <div><span class="text-slate-500">Carga Mensual en Deudas:</span> <strong id="repPrintDebts" class="font-mono text-sm">$280.00</strong></div>
+            </div>
+        </div>
+
+        <!-- Factor Breakdown Table -->
+        <div class="mb-6">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2 border-b border-slate-300 pb-1">
+                Desglose Paramétrico de Factores de Buró
+            </h3>
+            <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-300 bg-slate-50 font-bold text-slate-700">
+                        <th class="py-2 px-2">Variable Evaluada</th>
+                        <th class="py-2 px-2 text-center">Ponderación SB</th>
+                        <th class="py-2 px-2 text-center">Puntuación</th>
+                        <th class="py-2 px-2">Dictamen Técnico</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200" id="repPrintFactorsTbody">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pre-Approved Recommendations Summary -->
+        <div class="mb-6">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2 border-b border-slate-300 pb-1">
+                Viabilidad en Productos del Sistema Financiero
+            </h3>
+            <div class="grid grid-cols-2 gap-3 text-xs" id="repPrintProductsGrid">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Legal Disclaimer & Simulation Stamp -->
+        <div class="pt-6 border-t border-slate-300 flex items-center justify-between text-[9px] text-slate-500">
+            <div class="max-w-md">
+                <p>
+                    <strong>Aviso Legal:</strong> Este informe es una evaluación analítica basada en las normativas públicas de la Superintendencia de Bancos del Ecuador y modelos estandarizados de buró. No reemplaza los reportes formales de DINARDAP ni las políticas internas de asignación de cupos de cada institución bancaria.
+                </p>
+            </div>
+            <div class="text-right border border-slate-400 p-2 rounded text-center">
+                <div class="font-mono font-bold text-slate-800 text-[10px]">DOCUMENTO GENERADO CON ÉXITO</div>
+                <div class="text-[8px] text-slate-500">Sello Digital Verificado</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'equicredit_360_ec_pro_data_v2';
+        const GAS_URL_KEY = 'equicredit_gas_url_v2';
+
+        let appState = {
+            profile: {
+                fullName: 'Carlos Andrés Mendoza Loor',
+                cedula: '1723456789',
+                email: 'carlos.mendoza@email.com',
+                province: 'Pichincha',
+                currency: 'USD',
+                age: 32,
+                employment: 'dependiente_indefinido',
+                netIncome: 1200,
+                fixedExpenses: 550,
+                activeDebtsMonthly: 280,
+                totalDebtBalance: 3800,
+                moraBank: 0,
+                moraCommercial: 0,
+                cardUtilization: 50,
+                creditAge: 3,
+                recentInquiries: 3
+            },
+            scoreResult: {
+                score: 785,
+                segment: 'Bajo',
+                tierLabel: 'Buen Pagador / Riesgo Bajo',
+                sbGrade: 'A-1',
+                dti: 23.3,
+                residualCash: 370,
+                approvalProbability: 88,
+                factors: {}
+            },
+            cloud: {
+                gasUrl: '',
+                lastSynced: null,
+                isConnected: false
+            }
+        };
+
+        let radarChartInstance = null;
+
+        function validateEcuadorianCedula(cedula) {
+            const statusIcon = document.getElementById('cedulaStatusIcon');
+            const badge = document.getElementById('cedulaValidationBadge');
+            
+            if (!cedula || cedula.length !== 10) {
+                if (badge) {
+                    badge.textContent = '10 dígitos requeridos';
+                    badge.className = 'text-[10px] font-bold text-slate-400';
+                }
+                if (statusIcon) statusIcon.className = 'w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2';
+                return false;
+            }
+
+            if (!/^\d{10}$/.test(cedula)) {
+                if (badge) {
+                    badge.textContent = 'Solo dígitos numéricos';
+                    badge.className = 'text-[10px] font-bold text-rose-400';
+                }
+                if (statusIcon) statusIcon.className = 'w-4 h-4 text-rose-400 absolute right-3 top-1/2 -translate-y-1/2';
+                return false;
+            }
+
+            const provinceCode = parseInt(cedula.substring(0, 2), 10);
+            const thirdDigit = parseInt(cedula.substring(2, 3), 10);
+
+            // Valid provinces: 01 to 24, and 30 for special consular
+            if ((provinceCode < 1 || provinceCode > 24) && provinceCode !== 30) {
+                if (badge) {
+                    badge.textContent = 'Provincia inválida (01-24)';
+                    badge.className = 'text-[10px] font-bold text-rose-400';
+                }
+                if (statusIcon) statusIcon.className = 'w-4 h-4 text-rose-400 absolute right-3 top-1/2 -translate-y-1/2';
+                return false;
+            }
+
+            // Natural person third digit must be < 6
+            if (thirdDigit >= 6) {
+                if (badge) {
+                    badge.textContent = 'No corresponde a persona natural';
+                    badge.className = 'text-[10px] font-bold text-rose-400';
+                }
+                if (statusIcon) statusIcon.className = 'w-4 h-4 text-rose-400 absolute right-3 top-1/2 -translate-y-1/2';
+                return false;
+            }
+
+            // Algoritmo Módulo 10 de Ecuador
+            const coefficients = [2, 1, 2, 1, 2, 1, 2, 1, 2];
+            let sum = 0;
+            for (let i = 0; i < 9; i++) {
+                let val = parseInt(cedula.charAt(i), 10) * coefficients[i];
+                if (val >= 10) val -= 9;
+                sum += val;
+            }
+
+            const remainder = sum % 10;
+            const computedCheckDigit = remainder === 0 ? 0 : 10 - remainder;
+            const actualCheckDigit = parseInt(cedula.charAt(9), 10);
+
+            const isValid = (computedCheckDigit === actualCheckDigit);
+
+            if (badge && statusIcon) {
+                if (isValid) {
+                    badge.textContent = '✓ Cédula Válida (Módulo 10)';
+                    badge.className = 'text-[10px] font-bold text-emerald-400';
+                    statusIcon.className = 'w-4 h-4 text-emerald-400 absolute right-3 top-1/2 -translate-y-1/2';
+                } else {
+                    badge.textContent = '✕ Dígito Verificador Incorrecto';
+                    badge.className = 'text-[10px] font-bold text-rose-400';
+                    statusIcon.className = 'w-4 h-4 text-rose-400 absolute right-3 top-1/2 -translate-y-1/2';
+                }
+            }
+
+            return isValid;
+        }
+
+        function updateLiveDtiCalculation() {
+            const netIncome = parseFloat(document.getElementById('inpNetIncome').value) || 1;
+            const activeDebtsMonthly = parseFloat(document.getElementById('inpActiveDebtsMonthly').value) || 0;
+            const dti = ((activeDebtsMonthly / netIncome) * 100).toFixed(1);
+            
+            const badge = document.getElementById('quickDtiBadge');
+            if (badge) {
+                if (dti > 30) {
+                    badge.textContent = `${dti}% (Alerta: Supera el 30% SB)`;
+                    badge.className = 'font-mono font-bold text-rose-400';
+                } else {
+                    badge.textContent = `${dti}% (Saludable < 30% SB)`;
+                    badge.className = 'font-mono font-bold text-cyan-400';
+                }
+            }
+        }
+
+        function calculateCreditScore() {
+            const fullName = document.getElementById('inpFullName').value.trim() || 'Usuario Evaluado';
+            const cedula = document.getElementById('inpCedula').value.trim() || '1712345678';
+            const email = document.getElementById('inpEmail').value.trim() || 'usuario@email.com';
+            const province = document.getElementById('inpProvince').value;
+            const currency = document.getElementById('inpCurrency').value || 'USD';
+            const employment = document.getElementById('inpEmployment').value;
+            const netIncome = parseFloat(document.getElementById('inpNetIncome').value) || 1000;
+            const fixedExpenses = parseFloat(document.getElementById('inpFixedExpenses').value) || 450;
+            const activeDebtsMonthly = parseFloat(document.getElementById('inpActiveDebtsMonthly').value) || 0;
+            const totalDebtBalance = parseFloat(document.getElementById('inpTotalDebtBalance').value) || 0;
+
+            const moraBank = parseInt(document.getElementById('inpHistoricMoraBank').value, 10);
+            const moraCommercial = parseInt(document.getElementById('inpHistoricMoraCommercial').value, 10);
+            const cardUtilization = parseInt(document.getElementById('inpCardUtilization').value, 10);
+            const creditAge = parseInt(document.getElementById('inpCreditAge').value, 10);
+            const recentInquiries = parseInt(document.getElementById('inpRecentInquiries').value, 10);
+
+            // DTI (Debt-to-Income)
+            const dti = (activeDebtsMonthly / (netIncome > 0 ? netIncome : 1)) * 100;
+            const residualCash = netIncome - (fixedExpenses + activeDebtsMonthly);
+
+            // Factor 1: Payment History (35% -> Max 350 pts)
+            let paymentScore = 350;
+            if (moraBank === 1) paymentScore -= 60;
+            else if (moraBank === 2) paymentScore -= 130;
+            else if (moraBank === 3) paymentScore -= 210;
+            else if (moraBank === 4) paymentScore -= 290;
+
+            if (moraCommercial === 1) paymentScore -= 25;
+            else if (moraCommercial === 2) paymentScore -= 60;
+            else if (moraCommercial === 3) paymentScore -= 90;
+            paymentScore = Math.max(30, paymentScore);
+
+            // Factor 2: Debt Utilization & DTI (30% -> Max 300 pts)
+            let debtScore = 300;
+            if (dti > 45) debtScore -= 140;
+            else if (dti > 35) debtScore -= 80;
+            else if (dti > 30) debtScore -= 40;
+
+            if (cardUtilization >= 100) debtScore -= 100;
+            else if (cardUtilization >= 85) debtScore -= 65;
+            else if (cardUtilization >= 50) debtScore -= 25;
+            debtScore = Math.max(30, debtScore);
+
+            // Factor 3: Credit History Age (15% -> Max 150 pts)
+            let ageScore = 50;
+            if (creditAge >= 5) ageScore = 150;
+            else if (creditAge >= 3) ageScore = 120;
+            else if (creditAge >= 1) ageScore = 85;
+
+            // Factor 4: Recent Inquiries (10% -> Max 100 pts)
+            let inquiriesScore = 100;
+            if (recentInquiries >= 5) inquiriesScore = 40;
+            else if (recentInquiries >= 2) inquiriesScore = 75;
+
+            // Factor 5: Stability and Regime (10% -> Max 99 pts)
+            let stabilityScore = 80;
+            if (employment === 'dependiente_indefinido') stabilityScore = 99;
+            else if (employment === 'profesional_ruc') stabilityScore = 88;
+            else if (employment === 'empresario_rimpe') stabilityScore = 82;
+            else stabilityScore = 45;
+
+            // Total Score calculation (1 to 999)
+            let totalRawScore = paymentScore + debtScore + ageScore + inquiriesScore + stabilityScore;
+            totalRawScore = Math.min(999, Math.max(1, Math.round(totalRawScore)));
+
+            // Segment categorization
+            let segment = 'Bajo';
+            let tierLabel = 'Buen Pagador / Riesgo Bajo';
+            let sbGrade = 'A-1';
+            let approvalProb = 85;
+
+            if (totalRawScore < 400) {
+                segment = 'Muy Alto';
+                tierLabel = 'Morosidad Crítica / Alto Riesgo';
+                sbGrade = 'E (Irrecuperable)';
+                approvalProb = 12;
+            } else if (totalRawScore < 700) {
+                segment = 'Medio';
+                tierLabel = 'Riesgo Medio / Capacidad Limitada';
+                sbGrade = 'B-1 / B-2 (Aceptable)';
+                approvalProb = 52;
+            } else if (totalRawScore < 850) {
+                segment = 'Bajo';
+                tierLabel = 'Buen Pagador / Riesgo Bajo';
+                sbGrade = 'A-1 / A-2 (Preferente)';
+                approvalProb = 88;
+            } else {
+                segment = 'Excelente';
+                tierLabel = 'Perfil Premium AAA / Excelente';
+                sbGrade = 'AAA (Óptimo)';
+                approvalProb = 97;
+            }
+
+            // Update app state
+            appState.profile = {
+                fullName,
+                cedula,
+                email,
+                province,
+                currency,
+                employment,
+                netIncome,
+                fixedExpenses,
+                activeDebtsMonthly,
+                totalDebtBalance,
+                moraBank,
+                moraCommercial,
+                cardUtilization,
+                creditAge,
+                recentInquiries
+            };
+
+            appState.scoreResult = {
+                score: totalRawScore,
+                segment,
+                tierLabel,
+                sbGrade,
+                dti: parseFloat(dti.toFixed(1)),
+                residualCash,
+                approvalProbability: approvalProb,
+                factors: {
+                    payment: Math.round((paymentScore / 350) * 100),
+                    debt: Math.round((debtScore / 300) * 100),
+                    age: Math.round((ageScore / 150) * 100),
+                    inquiries: Math.round((inquiriesScore / 100) * 100),
+                    stability: Math.round((stabilityScore / 99) * 100)
+                }
+            };
+
+            saveStateToStorage();
+            updateUIComponents();
+            switchView('score_dashboard');
+
+            if (totalRawScore >= 700) {
+                confetti({
+                    particleCount: 90,
+                    spread: 75,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function updateUIComponents() {
+            const res = appState.scoreResult;
+            const prof = appState.profile;
+
+            const userGreeting = document.getElementById('scoreUserGreeting');
+            if (userGreeting) userGreeting.textContent = `${prof.fullName || 'Usuario Evaluado'}`;
+
+            const badge = document.getElementById('badgeSegmentHeader');
+            if (badge) {
+                badge.textContent = `RIESGO ${res.segment.toUpperCase()}`;
+                if (res.segment === 'Muy Alto') {
+                    badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+                } else if (res.segment === 'Medio') {
+                    badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                } else if (res.segment === 'Bajo') {
+                    badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                } else {
+                    badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
+                }
+            }
+
+            const scoreVal = document.getElementById('scoreValueDisplay');
+            if (scoreVal) {
+                scoreVal.textContent = res.score;
+                if (res.score < 400) scoreVal.className = 'text-4xl md:text-5xl font-black font-mono tracking-tight text-rose-500';
+                else if (res.score < 700) scoreVal.className = 'text-4xl md:text-5xl font-black font-mono tracking-tight text-amber-400';
+                else if (res.score < 850) scoreVal.className = 'text-4xl md:text-5xl font-black font-mono tracking-tight text-emerald-400';
+                else scoreVal.className = 'text-4xl md:text-5xl font-black font-mono tracking-tight text-cyan-300';
+            }
+
+            const tierLabel = document.getElementById('scoreTierLabel');
+            if (tierLabel) tierLabel.textContent = res.tierLabel;
+
+            // KPI Cards
+            document.getElementById('kpiDtiValue').textContent = `${res.dti}%`;
+            document.getElementById('kpiDtiBar').style.width = `${Math.min(100, res.dti)}%`;
+            if (res.dti > 30) {
+                document.getElementById('kpiDtiBar').className = 'bg-rose-500 h-full transition-all duration-700';
+            } else {
+                document.getElementById('kpiDtiBar').className = 'bg-emerald-400 h-full transition-all duration-700';
+            }
+
+            document.getElementById('kpiResidualValue').textContent = `$${res.residualCash.toFixed(2)}`;
+            document.getElementById('kpiApprovalProb').textContent = `${res.approvalProbability}%`;
+            document.getElementById('kpiSbGrade').textContent = res.sbGrade.split(' ')[0];
+            document.getElementById('kpiSbLabel').textContent = res.sbGrade;
+
+            // Factor Bars
+            document.getElementById('factPaymentImpact').textContent = `${res.factors.payment || 90} / 100 pts`;
+            document.getElementById('factPaymentBar').style.width = `${res.factors.payment || 90}%`;
+
+            document.getElementById('factUtilizationImpact').textContent = `${res.factors.debt || 80} / 100 pts`;
+            document.getElementById('factUtilizationBar').style.width = `${res.factors.debt || 80}%`;
+
+            document.getElementById('factAgeImpact').textContent = `${res.factors.age || 75} / 100 pts`;
+            document.getElementById('factAgeBar').style.width = `${res.factors.age || 75}%`;
+
+            document.getElementById('factInquiriesImpact').textContent = `${res.factors.inquiries || 85} / 100 pts`;
+            document.getElementById('factInquiriesBar').style.width = `${res.factors.inquiries || 85}%`;
+
+            document.getElementById('factStabilityImpact').textContent = `${res.factors.stability || 85} / 100 pts`;
+            document.getElementById('factStabilityBar').style.width = `${res.factors.stability || 85}%`;
+
+            // Draw Speedometer Gauge Canvas
+            drawGauge(res.score);
+
+            // Draw Radar Factors Chart
+            renderRadarChart();
+
+            // Populate Pre-Approver Products
+            populateCreditProducts();
+
+            // Populate Action Plan Roadmap
+            populateActionPlanRoadmap();
+
+            // Setup What-If slider
+            document.getElementById('simCurrentScoreLabel').textContent = `Score Actual: ${res.score} pts`;
+            document.getElementById('simDebtSlider').value = 0;
+            updateWhatIfSimulation(0);
+
+            lucide.createIcons();
+        }
+
+        function drawGauge(score) {
+            const canvas = document.getElementById('gaugeCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+
+            canvas.width = 340 * dpr;
+            canvas.height = 190 * dpr;
+            ctx.scale(dpr, dpr);
+
+            const centerX = 170;
+            const centerY = 165;
+            const radius = 135;
+            const lineWidth = 22;
+
+            ctx.clearRect(0, 0, 340, 190);
+
+            // Semicircular segments (1 to 999)
+            const segments = [
+                { start: Math.PI, end: Math.PI + (Math.PI * 0.4), color: '#ff0844' }, // Red (1-399)
+                { start: Math.PI + (Math.PI * 0.4), end: Math.PI + (Math.PI * 0.7), color: '#f59e0b' }, // Amber (400-699)
+                { start: Math.PI + (Math.PI * 0.7), end: Math.PI + (Math.PI * 0.85), color: '#00f260' }, // Green (700-849)
+                { start: Math.PI + (Math.PI * 0.85), end: 2 * Math.PI, color: '#00f2fe' } // Cyan (850-999)
+            ];
+
+            segments.forEach(seg => {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, seg.start, seg.end);
+                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = seg.color;
+                ctx.stroke();
+            });
+
+            // Needle angle calculation
+            const normalized = Math.min(1, Math.max(0, (score - 1) / 998));
+            const needleAngle = Math.PI + (normalized * Math.PI);
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(needleAngle);
+
+            ctx.beginPath();
+            ctx.moveTo(0, -6);
+            ctx.lineTo(radius - 20, 0);
+            ctx.lineTo(0, 6);
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = '#00f2fe';
+            ctx.shadowBlur = 12;
+            ctx.fill();
+
+            // Needle center pin
+            ctx.beginPath();
+            ctx.arc(0, 0, 10, 0, 2 * Math.PI);
+            ctx.fillStyle = '#0f172a';
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#ffffff';
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function renderRadarChart() {
+            const canvas = document.getElementById('radarFactorsCanvas');
+            if (!canvas) return;
+
+            const res = appState.scoreResult;
+            const dataValues = [
+                res.factors.payment || 85,
+                res.factors.debt || 80,
+                res.factors.age || 70,
+                res.factors.inquiries || 85,
+                res.factors.stability || 90
+            ];
+
+            if (radarChartInstance) radarChartInstance.destroy();
+
+            radarChartInstance = new Chart(canvas, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        'Historial de Pagos',
+                        'Capacidad / DTI',
+                        'Antigüedad Buró',
+                        'Consultas Recientes',
+                        'Estabilidad IESS/RUC'
+                    ],
+                    datasets: [{
+                        label: 'Desempeño del Perfil',
+                        data: dataValues,
+                        backgroundColor: 'rgba(0, 242, 254, 0.22)',
+                        borderColor: '#00f2fe',
+                        pointBackgroundColor: '#00f260',
+                        pointBorderColor: '#ffffff',
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: '#00f2fe',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            pointLabels: {
+                                color: '#94a3b8',
+                                font: { size: 10, weight: '600' }
+                            },
+                            suggestedMin: 20,
+                            suggestedMax: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function populateCreditProducts() {
+            const container = document.getElementById('creditProductsGrid');
+            if (!container) return;
+
+            const res = appState.scoreResult;
+            const prof = appState.profile;
+            const score = res.score;
+            const maxInstallment = (prof.netIncome * 0.35) - prof.activeDebtsMonthly;
+            const viableCuota = Math.max(0, maxInstallment);
+
+            const products = [
+                {
+                    title: 'Crédito Hipotecario / Vivienda',
+                    icon: 'home',
+                    minScore: 680,
+                    institutions: 'BIESS, Banco Pichincha, Banco Guayaquil, Banco del Pacífico',
+                    maxAmount: (viableCuota * 120).toFixed(0),
+                    rate: 'Tasa VIP 4.99% / Ordinario 8.5%',
+                    plazo: 'Hasta 20 - 25 años'
+                },
+                {
+                    title: 'Crédito Automotriz (Vehicular)',
+                    icon: 'car',
+                    minScore: 650,
+                    institutions: 'Produbanco, Pichincha, Coop. JEP, Coop. Policía Nacional',
+                    maxAmount: (viableCuota * 48).toFixed(0),
+                    rate: 'Tasa Referencial 12.5% a 15.2%',
+                    plazo: 'Hasta 60 meses'
+                },
+                {
+                    title: 'Tarjeta de Crédito Internacional (Oro / Black)',
+                    icon: 'credit-card',
+                    minScore: 720,
+                    institutions: 'Visa / Mastercard Banco Pichincha, Diners Club, Pacificard',
+                    maxAmount: (prof.netIncome * 2.5).toFixed(0),
+                    rate: 'Tasa Máxima Efectiva SB: 16.06%',
+                    plazo: 'Diferido corriente hasta 36 meses'
+                },
+                {
+                    title: 'Microcrédito Productivo / RIMPE',
+                    icon: 'briefcase',
+                    minScore: 580,
+                    institutions: 'Coop. Alianza del Valle, Coop. 29 de Octubre, BanEcuador',
+                    maxAmount: (prof.netIncome * 6).toFixed(0),
+                    rate: 'Tasa Microcrédito: 16% a 21%',
+                    plazo: 'Hasta 36 - 48 meses'
+                }
+            ];
+
+            container.innerHTML = products.map(p => {
+                const isApproved = score >= p.minScore && viableCuota > 50;
+                const statusBadge = isApproved
+                    ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Pre-Aprobado</span>'
+                    : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">Requiere Subir Score</span>';
+
+                return `
+                    <div class="glass-card rounded-2xl p-5 space-y-3 relative overflow-hidden border ${isApproved ? 'border-emerald-500/25' : 'border-rose-500/20'}">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center ${isApproved ? 'text-emerald-400' : 'text-slate-400'}">
+                                    <i data-lucide="${p.icon}" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-slate-100">${p.title}</h4>
+                                    <p class="text-[11px] text-slate-400">${p.institutions}</p>
+                                </div>
+                            </div>
+                            ${statusBadge}
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-xs py-2 border-y border-white/5 font-mono">
+                            <div>
+                                <span class="text-[10px] font-sans text-slate-500 block">Cupo Sugerido</span>
+                                <strong class="text-slate-200">${isApproved ? '$' + Number(p.maxAmount).toLocaleString('es-EC') : '$0'}</strong>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-sans text-slate-500 block">Cuota Máx.</span>
+                                <strong class="text-slate-200">${isApproved ? '$' + viableCuota.toFixed(0) + '/m' : 'N/A'}</strong>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-sans text-slate-500 block">Score Mínimo</span>
+                                <strong class="${score >= p.minScore ? 'text-emerald-400' : 'text-rose-400'}">${p.minScore} pts</strong>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-[11px] text-slate-400 pt-1">
+                            <span>${p.rate}</span>
+                            <span class="text-slate-500">${p.plazo}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function populateActionPlanRoadmap() {
+            const container = document.getElementById('actionPlanCardsContainer');
+            if (!container) return;
+
+            const prof = appState.profile;
+            const actions = [];
+
+            if (prof.cardUtilization > 30) {
+                actions.push({
+                    title: '1. Reducir Uso de Tarjetas al 25%',
+                    gain: '+35 a +50 pts',
+                    tag: 'Impacto Rápido (30 días)',
+                    desc: 'Realiza abonos antes de la fecha de corte. Las instituciones bancarias reportan el saldo al cierre; mantener el cupo utilizado bajo 30% optimiza la evaluación de liquidez.'
+                });
+            } else {
+                actions.push({
+                    title: '1. Mantener Cupos de Tarjeta Libres',
+                    gain: '+15 a +25 pts',
+                    tag: 'Consolidación',
+                    desc: 'Excelente manejo de cupos. Continúa realizando compras pequeñas y cancelándolas en corriente para fortalecer el récord sin incurrir en intereses.'
+                });
+            }
+
+            if (prof.moraCommercial > 0 || prof.moraBank > 0) {
+                actions.push({
+                    title: '2. Finiquitar y Solicitar Paz y Salvo',
+                    gain: '+60 a +90 pts',
+                    tag: 'Prioridad Crítica',
+                    desc: 'Cancela saldos vencidos en almacenes comerciales o cooperativas y solicita de inmediato el Certificado de No Adeudar. En Ecuador el buró actualiza a mes vencido.'
+                });
+            } else {
+                actions.push({
+                    title: '2. Consolidación de Pasivos Menores',
+                    gain: '+25 a +40 pts',
+                    tag: 'Optimización DTI',
+                    desc: 'Unifica deudas dispersas en un solo crédito bancario a menor tasa. Esto liberará flujo de caja mensual y reducirá el ratio DTI.'
+                });
+            }
+
+            if (prof.recentInquiries >= 3) {
+                actions.push({
+                    title: '3. Detener Consultas por 90 Días',
+                    gain: '+20 a +30 pts',
+                    tag: 'Enfriamiento Buró',
+                    desc: 'Cada solicitud de crédito genera una consulta en Equifax. Múltiples indagaciones consecutivas activan alertas sobre urgencia de liquidez.'
+                });
+            } else {
+                actions.push({
+                    title: '3. Antigüedad y Aportaciones al IESS',
+                    gain: '+20 a +35 pts',
+                    tag: 'Estabilidad a Mediano Plazo',
+                    desc: 'La continuidad en planillas patronales del IESS o declaraciones puntuales en el SRI es considerada evidencia primordial de capacidad de pago.'
+                });
+            }
+
+            container.innerHTML = actions.map(act => `
+                <div class="glass-card rounded-2xl p-5 space-y-3 border-blue-500/20 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">${act.tag}</span>
+                            <span class="text-xs font-mono font-bold text-emerald-400">${act.gain}</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-100">${act.title}</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed mt-2">${act.desc}</p>
+                    </div>
+                    <div class="pt-3 border-t border-white/5 flex items-center gap-1.5 text-[11px] text-cyan-400 font-semibold">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                        <span>Acción recomendada para Ecuador</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateWhatIfSimulation(reducedAmount) {
+            reducedAmount = parseFloat(reducedAmount) || 0;
+            document.getElementById('simDebtReductionValue').textContent = `$${reducedAmount} menos al mes`;
+
+            const currentScore = appState.scoreResult.score;
+            const currentDebts = appState.profile.activeDebtsMonthly;
+            const netIncome = appState.profile.netIncome || 1;
+
+            const potentialBoost = Math.round((reducedAmount / 350) * 80);
+            const simulatedScore = Math.min(999, currentScore + potentialBoost);
+
+            const simulatedDebts = Math.max(0, currentDebts - reducedAmount);
+            const simulatedDti = ((simulatedDebts / netIncome) * 100).toFixed(1);
+
+            document.getElementById('simProjectedScore').textContent = `${simulatedScore} Puntos (+${potentialBoost} pts)`;
+            document.getElementById('simProjectedDti').textContent = `${simulatedDti}%`;
+        }
+
+        async function testGoogleSheetsConnection() {
+            const urlInput = document.getElementById('inpGoogleAppScriptUrl');
+            const url = urlInput.value.trim();
+            const feedback = document.getElementById('cloudConnectionFeedback');
+
+            if (!url.startsWith('https://script.google.com/macros/s/')) {
+                feedback.innerHTML = '<span class="text-rose-400">✕ Error: Ingresa una URL válida de Web App de Google Apps Script.</span>';
+                return;
+            }
+
+            feedback.innerHTML = '<span class="text-amber-400">Verificando conexión con Google Sheets...</span>';
+
+            try {
+                // Testing endpoint via simple fetch
+                await fetch(url, { method: 'GET', mode: 'no-cors' });
+                
+                appState.cloud.gasUrl = url;
+                appState.cloud.isConnected = true;
+                localStorage.setItem(GAS_URL_KEY, url);
+                
+                feedback.innerHTML = '<span class="text-emerald-400">✓ Conexión exitosa. Tu Google Sheet está listo para sincronizar.</span>';
+                updateCloudStatusBadge(true, 'Google Sheets Conectado');
+            } catch (err) {
+                feedback.innerHTML = '<span class="text-amber-300">✓ URL guardada localmente. Lista para enviar registros.</span>';
+                appState.cloud.gasUrl = url;
+                appState.cloud.isConnected = true;
+                localStorage.setItem(GAS_URL_KEY, url);
+                updateCloudStatusBadge(true, 'Google Sheets Enlazado');
+            }
+        }
+
+        async function syncToGoogleSheets() {
+            const url = appState.cloud.gasUrl || document.getElementById('inpGoogleAppScriptUrl').value.trim();
+            const feedback = document.getElementById('cloudConnectionFeedback');
+
+            if (!url) {
+                switchView('cloud');
+                feedback.innerHTML = '<span class="text-rose-400">Configura la URL de tu Google Apps Script primero.</span>';
+                return;
+            }
+
+            feedback.innerHTML = '<span class="text-cyan-400">Enviando evaluación a Google Sheets...</span>';
+
+            const payload = {
+                fullName: appState.profile.fullName,
+                cedula: appState.profile.cedula,
+                province: appState.profile.province,
+                netIncome: appState.profile.netIncome,
+                activeDebtsMonthly: appState.profile.activeDebtsMonthly,
+                score: appState.scoreResult.score,
+                segment: appState.scoreResult.segment,
+                dti: appState.scoreResult.dti
+            };
+
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                appState.cloud.lastSynced = new Date().toISOString();
+                saveStateToStorage();
+                
+                feedback.innerHTML = `<span class="text-emerald-400">✓ Datos sincronizados con Google Sheets a las ${new Date().toLocaleTimeString('es-EC')}.</span>`;
+                updateCloudStatusBadge(true, 'En la Nube (Google Sheets)');
+
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.8 }
+                });
+            } catch (error) {
+                feedback.innerHTML = '<span class="text-amber-400">Registro enviado a Google Sheets (comprueba tu hoja).</span>';
+            }
+        }
+
+        async function loadFromGoogleSheets() {
+            const url = appState.cloud.gasUrl || document.getElementById('inpGoogleAppScriptUrl').value.trim();
+            const feedback = document.getElementById('cloudConnectionFeedback');
+
+            if (!url) {
+                feedback.innerHTML = '<span class="text-rose-400">Ingresa la URL de Google Apps Script primero.</span>';
+                return;
+            }
+
+            feedback.innerHTML = '<span class="text-cyan-400">Consultando hoja de cálculo...</span>';
+
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result && result.data && result.data.length > 1) {
+                    const lastRow = result.data[result.data.length - 1];
+                    // Map last row back into inputs
+                    document.getElementById('inpFullName').value = lastRow[1] || appState.profile.fullName;
+                    document.getElementById('inpCedula').value = lastRow[2] || appState.profile.cedula;
+                    document.getElementById('inpProvince').value = lastRow[3] || appState.profile.province;
+                    document.getElementById('inpNetIncome').value = lastRow[4] || appState.profile.netIncome;
+                    document.getElementById('inpActiveDebtsMonthly').value = lastRow[5] || appState.profile.activeDebtsMonthly;
+                    
+                    validateEcuadorianCedula(document.getElementById('inpCedula').value);
+                    calculateCreditScore();
+                    feedback.innerHTML = '<span class="text-emerald-400">✓ Última evaluación recuperada exitosamente desde Google Sheets.</span>';
+                } else {
+                    feedback.innerHTML = '<span class="text-amber-400">La hoja aún no contiene filas de evaluación. Ejecuta una sincronización primero.</span>';
+                }
+            } catch (err) {
+                feedback.innerHTML = '<span class="text-rose-400">No se pudo leer directamente por CORS. Utiliza la función de exportación JSON o envía una nueva sincronización.</span>';
+            }
+        }
+
+        function updateCloudStatusBadge(connected, text) {
+            const dot = document.getElementById('cloudStatusDot');
+            const label = document.getElementById('cloudStatusText');
+            if (dot && label) {
+                label.textContent = text;
+                if (connected) {
+                    dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                } else {
+                    dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+                }
+            }
+        }
+
+        function copyGasScript() {
+            const snippet = document.getElementById('gasScriptSnippet').innerText;
+            const btnText = document.getElementById('copyScriptBtnText');
+            
+            // Fallback clipboard command
+            const el = document.createElement('textarea');
+            el.value = snippet;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            btnText.textContent = '¡Código Copiado al Portapapeles!';
+            setTimeout(() => {
+                btnText.textContent = 'Copiar Código de Apps Script';
+            }, 2500);
+        }
+
+        function exportDataToJson() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `EquiCredit_Respaldo_${appState.profile.cedula || 'EC'}_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importDataFromJson(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && parsed.profile && parsed.scoreResult) {
+                        appState = parsed;
+                        saveStateToStorage();
+                        populateFormFromState();
+                        calculateCreditScore();
+                        document.getElementById('cloudConnectionFeedback').innerHTML = '<span class="text-emerald-400">✓ Respaldo JSON restaurado correctamente.</span>';
+                    }
+                } catch (err) {
+                    document.getElementById('cloudConnectionFeedback').innerHTML = '<span class="text-rose-400">✕ Archivo JSON no válido.</span>';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function triggerPrintReport() {
+            const prof = appState.profile;
+            const res = appState.scoreResult;
+            const now = new Date();
+
+            document.getElementById('repPrintDate').textContent = now.toLocaleDateString('es-EC');
+            document.getElementById('repPrintTime').textContent = now.toLocaleTimeString('es-EC');
+            document.getElementById('repVerificationHash').textContent = `EC-${prof.cedula ? prof.cedula.substring(0, 6) : '170000'}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+
+            document.getElementById('repPrintName').textContent = prof.fullName;
+            document.getElementById('repPrintCedula').textContent = prof.cedula;
+            document.getElementById('repPrintProvince').textContent = prof.province;
+            document.getElementById('repPrintSync').textContent = appState.cloud.isConnected ? 'Sincronizado Nube' : 'Registro Local';
+
+            document.getElementById('repPrintScore').textContent = res.score;
+            document.getElementById('repPrintSegment').textContent = `${res.tierLabel} • Riesgo ${res.segment}`;
+            document.getElementById('repPrintSbGrade').textContent = res.sbGrade;
+            document.getElementById('repPrintDti').textContent = `${res.dti}%`;
+            document.getElementById('repPrintIncome').textContent = `$${prof.netIncome.toFixed(2)}`;
+            document.getElementById('repPrintDebts').textContent = `$${prof.activeDebtsMonthly.toFixed(2)}`;
+
+            // Populate table of factors
+            const tbody = document.getElementById('repPrintFactorsTbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td class="py-2 px-2 font-semibold">Historial de Pagos y Morosidad</td>
+                    <td class="py-2 px-2 text-center">35%</td>
+                    <td class="py-2 px-2 text-center font-mono font-bold">${res.factors.payment || 90}/100</td>
+                    <td class="py-2 px-2 text-slate-600">${prof.moraBank === 0 ? 'Excelente, sin atrasos bancarios' : 'Presenta historial con mora registrada'}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-2 font-semibold">Uso de Líneas y Endeudamiento (DTI)</td>
+                    <td class="py-2 px-2 text-center">30%</td>
+                    <td class="py-2 px-2 text-center font-mono font-bold">${res.factors.debt || 80}/100</td>
+                    <td class="py-2 px-2 text-slate-600">${res.dti <= 30 ? 'Dentro del 30% prudencial SB' : 'Alerta: Endeudamiento compromete >30% del ingreso'}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-2 font-semibold">Antigüedad en Buró Crediticio</td>
+                    <td class="py-2 px-2 text-center">15%</td>
+                    <td class="py-2 px-2 text-center font-mono font-bold">${res.factors.age || 75}/100</td>
+                    <td class="py-2 px-2 text-slate-600">${prof.creditAge >= 3 ? 'Récord crediticio consolidado' : 'Historial joven o en desarrollo'}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-2 font-semibold">Búsqueda Reciente de Crédito (Consultas)</td>
+                    <td class="py-2 px-2 text-center">10%</td>
+                    <td class="py-2 px-2 text-center font-mono font-bold">${res.factors.inquiries || 85}/100</td>
+                    <td class="py-2 px-2 text-slate-600">${prof.recentInquiries < 3 ? 'Nivel normal de revisiones' : 'Frecuencia alta de solicitudes'}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-2 font-semibold">Estabilidad Laboral (IESS / RUC)</td>
+                    <td class="py-2 px-2 text-center">10%</td>
+                    <td class="py-2 px-2 text-center font-mono font-bold">${res.factors.stability || 85}/100</td>
+                    <td class="py-2 px-2 text-slate-600">${prof.employment === 'dependiente_indefinido' ? 'Afiliación IESS bajo contrato indefinido' : 'Régimen independiente / RUC'}</td>
+                </tr>
+            `;
+
+            // Products summary for print
+            const prodGrid = document.getElementById('repPrintProductsGrid');
+            const viableCuota = Math.max(0, (prof.netIncome * 0.35) - prof.activeDebtsMonthly);
+            prodGrid.innerHTML = `
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded">
+                    <strong>Hipotecario / BIESS:</strong> ${res.score >= 680 ? 'VIABLE (Cuota sugerida $' + viableCuota.toFixed(0) + ')' : 'NO RECOMENDADO'}
+                </div>
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded">
+                    <strong>Crédito Vehicular:</strong> ${res.score >= 650 ? 'VIABLE en Bancos y Cooperativas' : 'REQUIERE GARANTE'}
+                </div>
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded">
+                    <strong>Tarjetas Oro / Black:</strong> ${res.score >= 720 ? 'PRE-APROBADO' : 'SUJETO A REVISIÓN MANUAL'}
+                </div>
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded">
+                    <strong>Microcrédito Productivo:</strong> ${res.score >= 580 ? 'VIABLE en Cooperativas' : 'RIESGO ELEVADO'}
+                </div>
+            `;
+
+            window.print();
+        }
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-pane').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                if (btn.getAttribute('data-view') === viewName) {
+                    btn.classList.add('active', 'bg-slate-800/90', '
